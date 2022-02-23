@@ -287,10 +287,6 @@ class CodeWriter
       s += "A=M-1\n"
       s += "M=!M\n"
     end
-    s+="A=A\n"
-    s+="A=A\n"
-    s+="A=A\n"
-    #s+="//#{@pc}\n"
     @pc+=1
     puts s
     return s
@@ -363,10 +359,6 @@ class CodeWriter
       s += "A=M\n"
       s += "M=D\n"
     end
-    s+="A=A\n"
-    s+="A=A\n"
-    s+="A=A\n"
-    #s+="//#{@pc}\n"
     @pc+=1
     puts s
     return s
@@ -374,9 +366,6 @@ class CodeWriter
 
   def writeLabel(label)
     s = "(#{label})\n"
-    s+="A=A\n"
-    s+="A=A\n"
-    s+="A=A\n"
     #s+="//#{@pc}\n"
     @pc+=1
     puts s
@@ -387,9 +376,6 @@ class CodeWriter
     s = ""
     s += "@#{label}\n"
     s += "0;JMP\n"
-    s+="A=A\n"
-    s+="A=A\n"
-    s+="A=A\n"
     #s+="//#{@pc}\n"
     @pc+=1
     puts s
@@ -404,9 +390,6 @@ class CodeWriter
     s += "D=M\n"
     s += "@#{label}\n"
     s += "D;JNE\n"
-    s+="A=A\n"
-    s+="A=A\n"
-    s+="A=A\n"
     #s+="//#{@pc}\n"
     @pc+=1
     puts s
@@ -451,9 +434,6 @@ class CodeWriter
     s += "@#{functionName}\n"
     s += "0;JMP\n"
     s += "(#{functionName}$#{@function_counter})\n"
-    s +="A=A\n"
-    s +="A=A\n"
-    s +="A=A\n"
     #s+="//#{@pc}\n"
     @pc+=1
     puts s
@@ -466,9 +446,6 @@ class CodeWriter
     numLocals.to_i.times do
       s += self.writePushPop("C_PUSH", "constant", "0")
     end
-    s+="A=A\n"
-    s+="A=A\n"
-    s+="A=A\n"
     #s+="//#{@pc}\n"
     @pc+=1
     puts s
@@ -477,14 +454,19 @@ class CodeWriter
 
   def writeReturn
     s = ""
+    # frame = lcl
     s += "@1\n"
     s += "D=M\n"
     s += "@13\n"
     s += "M=D\n"
+    # ret = *(frame-5)
     s += "@5\n"
     s += "D=D-A\n"
+    s += "A=D\n"
+    s += "D=M\n"
     s += "@14\n"
     s += "M=D\n"
+    # *arg = pop()
     s += "@0\n"
     s += "M=M-1\n"
     s += "A=M\n"
@@ -526,14 +508,10 @@ class CodeWriter
     s += "D=M\n"
     s += "@1\n"
     s += "M=D\n"
+    #goto ret
     s += "@14\n"
     s += "A=M\n"
-    s += "A=M\n"
     s += "0;JMP\n"
-    s+="A=A\n"
-    s+="A=A\n"
-    s+="A=A\n"
-    #s+="//#{@pc}\n"
     @pc+=1
     puts s
     return s
